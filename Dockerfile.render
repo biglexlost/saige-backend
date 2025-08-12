@@ -1,0 +1,42 @@
+# JAIMES AI Executive - Render.com Optimized Dockerfile
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /opt/render/project/src
+
+# Install minimal system dependencies (Render has limited build time)
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    make \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements for Render
+COPY requirements-render.txt requirements.txt
+
+# Install Python dependencies with optimizations for Render
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Create necessary directories
+RUN mkdir -p logs data cache
+
+# Set environment variables for Render
+ENV PYTHONPATH=/opt/render/project/src
+ENV PYTHONUNBUFFERED=1
+ENV DEPLOY_ENV=prod
+
+# Render will set PORT automatically
+EXPOSE $PORT
+
+# Health check for Render
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:$PORT/health || exit 1
+
+# Start command (Render will override this)
+CMD ["python", "main.py", "--mode", "production"]
+

@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: jaimes-backend
+    runtime: python
+    plan: starter  # or 'free' if you want to use the free tier
+    region: oregon  # optional, defaults to oregon
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ENV
+        value: prod
+      - key: PYTHONPATH
+        value: /opt/render/project/src
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: LOG_LEVEL
+        value: INFO
+      - key: GROQ_MODEL
+        value: llama3-8b-8192
+    healthCheckPath: /health
+    autoDeploy: true
+
+# Optional: Add a PostgreSQL database
+# databases:
+#   - name: jaimes-db
+#     plan: starter
+#     region: oregon
+#     postgresMajorVersion: 15

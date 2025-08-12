@@ -1,0 +1,482 @@
+{
+  "version": "1.0",
+  "source": "JAIMES Symptom-to-Repair Cheat Sheet",
+  "categories": [
+    {
+      "category": "noises",
+      "items": [
+        {
+          "symptom_examples": [
+            "Squealing when I start the car",
+            "High-pitched squeal under the hood",
+            "Squeal on acceleration"
+          ],
+          "potential_problems": [
+            "Worn serpentine belt",
+            "Weak/loose belt tensioner",
+            "Failing water pump bearing",
+            "Failing alternator bearing"
+          ],
+          "common_repairs": [
+            "Serpentine belt replacement",
+            "Belt tensioner replacement",
+            "Water pump replacement",
+            "Alternator replacement"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Squealing or screeching when braking"
+          ],
+          "potential_problems": [
+            "Worn brake pads",
+            "Glazed pads or rotors",
+            "Debris between pad and rotor",
+            "Warped rotors"
+          ],
+          "common_repairs": [
+            "Brake pad replacement",
+            "Rotor resurfacing or replacement",
+            "Brake hardware service/cleaning"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Grinding or scraping noise when braking"
+          ],
+          "potential_problems": [
+            "Pads worn to backing plate",
+            "Severely damaged rotor"
+          ],
+          "common_repairs": [
+            "Brake pad and rotor replacement",
+            "Brake caliper inspection/service"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Clicking or popping when turning",
+            "Clicking while accelerating in a turn"
+          ],
+          "potential_problems": [
+            "Worn CV axle/joint",
+            "Torn CV boot",
+            "Low/contaminated axle grease"
+          ],
+          "common_repairs": [
+            "CV axle replacement",
+            "CV boot replacement"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Clunking over bumps",
+            "Rattle from front end on rough roads"
+          ],
+          "potential_problems": [
+            "Worn shocks/struts",
+            "Worn control arm bushings",
+            "Loose or worn sway bar links/bushings"
+          ],
+          "common_repairs": [
+            "Shock/strut replacement",
+            "Suspension bushing replacement",
+            "Sway bar link/bushing replacement"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Knocking noise from the front end"
+          ],
+          "potential_problems": [
+            "Loose or worn ball joints",
+            "Worn tie rod ends",
+            "Steering linkage wear"
+          ],
+          "common_repairs": [
+            "Ball joint replacement",
+            "Tie rod end replacement",
+            "Alignment after repair"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Whining noise when accelerating",
+            "Whine that changes with vehicle speed"
+          ],
+          "potential_problems": [
+            "Failing transmission pump/gears",
+            "Low/old transmission fluid",
+            "Failing power steering pump",
+            "Differential bearing wear (rear/front)"
+          ],
+          "common_repairs": [
+            "Transmission fluid service",
+            "Transmission diagnosis/repair",
+            "Power steering pump replacement",
+            "Differential service/repair"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Rattling from under the car",
+            "Metallic rattle at certain RPMs"
+          ],
+          "potential_problems": [
+            "Loose exhaust heat shield",
+            "Catalytic converter substrate breaking up"
+          ],
+          "common_repairs": [
+            "Reattach/replace heat shield",
+            "Catalytic converter replacement"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "smells",
+      "items": [
+        {
+          "symptom_examples": [
+            "Sweet smell inside or outside the car",
+            "Maple syrup smell from vents"
+          ],
+          "potential_problems": [
+            "Coolant leak (radiator, heater core, water pump, hoses)"
+          ],
+          "common_repairs": [
+            "Radiator replacement/repair",
+            "Heater core replacement",
+            "Water pump replacement",
+            "Coolant hose replacement",
+            "Coolant flush"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Smell of gasoline inside or around the car"
+          ],
+          "potential_problems": [
+            "Fuel line leak",
+            "Leaking injector or injector seal",
+            "Fuel tank or fuel pump module leak",
+            "EVAP system leak"
+          ],
+          "common_repairs": [
+            "Fuel line repair/replacement",
+            "Injector seal replacement",
+            "Fuel pump/module replacement",
+            "EVAP leak diagnosis and repair (hoses, purge/vent valves)"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Burning smell after driving",
+            "Burning clutch or brake smell"
+          ],
+          "potential_problems": [
+            "Overheated brakes",
+            "Slipping clutch",
+            "Electrical short or melting insulation"
+          ],
+          "common_repairs": [
+            "Brake inspection/service",
+            "Clutch replacement",
+            "Electrical wiring/connector repair"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Rotten egg smell from exhaust"
+          ],
+          "potential_problems": [
+            "Failing catalytic converter",
+            "Rich fuel mixture",
+            "Faulty oxygen sensor"
+          ],
+          "common_repairs": [
+            "Catalytic converter replacement",
+            "Oxygen sensor replacement",
+            "Fuel/air mixture diagnosis and repair"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Musty/moldy smell from vents"
+          ],
+          "potential_problems": [
+            "Mold/mildew in HVAC evaporator case",
+            "Clogged or dirty cabin air filter",
+            "A/C drain clogged"
+          ],
+          "common_repairs": [
+            "Cabin air filter replacement",
+            "HVAC evaporator cleaning/sanitizing",
+            "Clear A/C drain"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "feel_handling",
+      "items": [
+        {
+          "symptom_examples": [
+            "Car pulls to one side",
+            "Steering wheel off-center"
+          ],
+          "potential_problems": [
+            "Wheel misalignment",
+            "Uneven tire pressure or wear",
+            "Sticking brake caliper"
+          ],
+          "common_repairs": [
+            "Wheel alignment",
+            "Tire service/rotation/replacement",
+            "Brake caliper service/replacement"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Vibration in steering wheel or seat at certain speeds"
+          ],
+          "potential_problems": [
+            "Unbalanced or bent wheels",
+            "Separated tire belt",
+            "Warped brake rotors (under braking)",
+            "Worn suspension bushings"
+          ],
+          "common_repairs": [
+            "Tire balancing/replacement",
+            "Wheel repair/replacement",
+            "Brake rotor replacement",
+            "Suspension bushing repair"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Steering feels loose or wanders"
+          ],
+          "potential_problems": [
+            "Worn tie rod ends",
+            "Worn ball joints",
+            "Steering gear wear"
+          ],
+          "common_repairs": [
+            "Tie rod end replacement",
+            "Ball joint replacement",
+            "Steering gear inspection/repair",
+            "Alignment after repair"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Bouncy or floaty ride"
+          ],
+          "potential_problems": [
+            "Worn shocks/struts"
+          ],
+          "common_repairs": [
+            "Shock/strut replacement"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "performance",
+      "items": [
+        {
+          "symptom_examples": [
+            "Car is hard to start",
+            "Slow crank or just clicks"
+          ],
+          "potential_problems": [
+            "Weak or failing battery",
+            "Failing starter motor",
+            "Bad ignition coil",
+            "Fuel delivery issue"
+          ],
+          "common_repairs": [
+            "Battery replacement",
+            "Starter replacement",
+            "Ignition coil replacement",
+            "Fuel pump replacement",
+            "Battery/charging system test"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Car shakes at idle",
+            "Rough idle"
+          ],
+          "potential_problems": [
+            "Worn spark plugs",
+            "Failing ignition coils",
+            "Vacuum leak",
+            "Dirty throttle body or MAF sensor"
+          ],
+          "common_repairs": [
+            "Spark plug replacement",
+            "Ignition coil replacement",
+            "Vacuum hose repair",
+            "Throttle body/MAF cleaning"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Loss of power",
+            "Sluggish acceleration",
+            "Poor fuel economy"
+          ],
+          "potential_problems": [
+            "Clogged catalytic converter",
+            "Failing oxygen sensor",
+            "Dirty air filter",
+            "Fuel system restriction"
+          ],
+          "common_repairs": [
+            "Catalytic converter replacement",
+            "Oxygen sensor replacement",
+            "Air filter replacement",
+            "Fuel system cleaning"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Engine cuts out or misfires",
+            "Stumbling under load"
+          ],
+          "potential_problems": [
+            "Bad spark plugs",
+            "Ignition coil failure",
+            "Fuel delivery problem",
+            "Crankshaft/camshaft sensor issues"
+          ],
+          "common_repairs": [
+            "Spark plug replacement",
+            "Ignition coil replacement",
+            "Fuel pump/filter service (where applicable)",
+            "Sensor diagnosis/replacement"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Check engine light is on"
+          ],
+          "potential_problems": [
+            "Oxygen sensor fault",
+            "Misfire (plugs/coils)",
+            "EVAP system leak",
+            "Numerous other monitored faults"
+          ],
+          "common_repairs": [
+            "Oxygen sensor replacement",
+            "Spark plug/coil replacement",
+            "EVAP system repair (hoses, purge/vent valves)",
+            "Further diagnosis based on codes"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Transmission slips",
+            "Delayed or harsh shifting",
+            "Whining from transmission"
+          ],
+          "potential_problems": [
+            "Low/old transmission fluid",
+            "Internal transmission wear",
+            "Solenoid or valve body issues"
+          ],
+          "common_repairs": [
+            "Transmission fluid and filter service",
+            "Transmission diagnosis/rebuild/replacement",
+            "Valve body/solenoid repair"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "leaks_visible",
+      "items": [
+        {
+          "symptom_examples": [
+            "Puddle under the front of the car"
+          ],
+          "potential_problems": [
+            "Coolant leak (radiator, water pump, hoses)",
+            "Engine oil leak",
+            "Power steering fluid leak"
+          ],
+          "common_repairs": [
+            "Radiator/water pump/hose replacement",
+            "Gasket/seal replacement",
+            "Power steering hose/pump repair"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Puddle under the middle or rear of the car"
+          ],
+          "potential_problems": [
+            "Fuel leak",
+            "Brake fluid leak (dangerous)",
+            "Normal exhaust condensation (water)"
+          ],
+          "common_repairs": [
+            "Fuel line/tank repair",
+            "Brake line/caliper repair and bleed",
+            "No repair if only clear water from exhaust condensation"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Oil spots in the driveway"
+          ],
+          "potential_problems": [
+            "Valve cover gasket leak",
+            "Oil pan gasket leak",
+            "Rear main seal seep"
+          ],
+          "common_repairs": [
+            "Valve cover gasket replacement",
+            "Oil pan gasket replacement",
+            "Rear main seal repair (as needed)"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Smoke from under the hood"
+          ],
+          "potential_problems": [
+            "Coolant leaking onto hot engine",
+            "Oil leaking onto exhaust manifold",
+            "Electrical short burning insulation"
+          ],
+          "common_repairs": [
+            "Hose/gasket replacement",
+            "Oil leak source repair",
+            "Electrical wiring repair"
+          ]
+        },
+        {
+          "symptom_examples": [
+            "Exhaust smoke (blue/white/black)"
+          ],
+          "potential_problems": [
+            "Blue: burning oil (worn rings/valve seals)",
+            "White: coolant in combustion (blown head gasket)",
+            "Black: rich fuel mixture"
+          ],
+          "common_repairs": [
+            "Engine repair (seals/rings) as needed",
+            "Head gasket replacement",
+            "Fuel/air mixture diagnosis and repair",
+            "Catalyst/O2 sensor check after rich condition"
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+

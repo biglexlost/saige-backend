@@ -1,0 +1,12 @@
+# Python virtual environment
+.venv/
+venv/
+# Python bytecode
+__pycache__/
+*.pyc
+# Environment variables (sensitive)
+.env
+# macOS system files
+.DS_Store
+# Ngrok executable (if you downloaded it into the project folder)
+ngrok
