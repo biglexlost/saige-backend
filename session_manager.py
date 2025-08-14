@@ -22,7 +22,7 @@ from models import JAIMESSession  # Import JAIMESSession from models.py
 
 # This assumes your JAIMESSession model is in this file.
 # When you restructure your project, you'll change this to `from models.schemas import JAIMESSession`.
-from complete_jaimes_with_customer_recognition import JAIMESSession
+# Removed stale import from the old module name. JAIMESSession now lives in models.py
 
 # It's recommended to install redis with: pip install redis
 try:

@@ -77,3 +77,62 @@ def log_event(
         conn.close()
     except Exception as e:
         logger.error(f"Failed to log event '{event_name}' for session {session_id}: {e}")
+
+
+def ensure_leads_table(db_path: str = DEFAULT_DB_PATH) -> None:
+    """Create a simple leads table for booking/consult requests (no PHI)."""
+    try:
+        conn = sqlite3.connect(db_path)
+        cur = conn.cursor()
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS leads (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                session_id TEXT NOT NULL,
+                timestamp TEXT NOT NULL,
+                name TEXT,
+                phone TEXT,
+                service_slug TEXT,
+                preferred_time TEXT,
+                notes TEXT
+            )
+        """
+        )
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        logger.error(f"Failed to init leads table: {e}")
+
+
+def save_lead(
+    session_id: str,
+    name: str,
+    phone: str,
+    service_slug: str,
+    preferred_time: str = "",
+    notes: str = "",
+    db_path: str = DEFAULT_DB_PATH,
+) -> None:
+    """Persist a lightweight lead/booking request record (avoid storing PHI)."""
+    try:
+        conn = sqlite3.connect(db_path)
+        cur = conn.cursor()
+        cur.execute(
+            """
+            INSERT INTO leads (session_id, timestamp, name, phone, service_slug, preferred_time, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                session_id,
+                datetime.utcnow().isoformat(timespec="seconds"),
+                name,
+                phone,
+                service_slug,
+                preferred_time,
+                notes,
+            ),
+        )
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        logger.error(f"Failed to save lead for session {session_id}: {e}")

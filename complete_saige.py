@@ -1,4 +1,4 @@
-# /src/complete_jaimes_with_customer_recognition.py
+# complete_saige.py
 
 import logging
 import re
@@ -10,11 +10,8 @@ from models import JAIMESSession, ConversationState, CustomerProfile, ChatMessag
 from mock_db import MockCustomerEngine
 from config import config
 from num2words import num2words
-from analytics import init_analytics_db, log_event
-from smart_pricing_manager import SmartPricingManager
-from vehicle_database_api_client import VehicleDatabaseAPIClient, VehicleInfo
-from milex_pricing_engine import MileXPricingEngine
-from vehicle_recall_service import VehicleRecallService
+from analytics import init_analytics_db, log_event, ensure_leads_table
+from models import VehicleInfo
 from enhanced_accent_handler import SouthernAccentHandler
 from enhanced_conversation_intelligence import EnhancedConversationIntelligence as ConversationIntelligence, EmotionalState, IntentType
 from enhanced_streaming import EnhancedStreamer as StreamingResponseManager, StreamingMode
@@ -163,17 +160,15 @@ class CompleteJAIMESSystem:
             self.redis_client = None
         self.in_memory_sessions: Dict[str, JAIMESSession] = {}
 
-        # Initialize analytics DB
+        # Initialize analytics DB and leads table (HIPAA-safe metadata only)
         init_analytics_db()
-
-        # Load diagnostic cheat sheet
         try:
-            with open('diagnostic_cheat_sheet.json', 'r') as f:
-                self.diagnostic_cheat_sheet = json.load(f)
-            logger.info("Loaded diagnostic cheat sheet")
-        except Exception as e:
-            logger.warning(f"Failed to load diagnostic cheat sheet: {e}")
-            self.diagnostic_cheat_sheet = None
+            ensure_leads_table()
+        except Exception:
+            logger.warning("Leads table initialization skipped")
+
+        # SAIGE: no automotive diagnostic cheat sheet
+        self.diagnostic_cheat_sheet = None
 
         # Initialize enhanced modules with performance optimizations
         try:
@@ -198,32 +193,13 @@ class CompleteJAIMESSystem:
             self._accent_cache = {}
             self._intelligence_cache = {}
 
-        # Initialize pricing components (API will only be used in PROD)
-        try:
-            self.vehicle_api_client = VehicleDatabaseAPIClient(
-                api_key=(config.vehicle_db_api_key or "DEV_KEY")
-            )
-            self.milex_engine = MileXPricingEngine()
-            self.pricing_manager = SmartPricingManager(
-                vehicle_api_client=self.vehicle_api_client,
-                milex_engine=self.milex_engine,
-            )
-            logger.info("Pricing components initialized")
-        except Exception as e:
-            logger.error(f"Failed to init pricing components: {e}")
-            self.vehicle_api_client = None
-            self.milex_engine = None
-            self.pricing_manager = None
+        # SAIGE: automotive pricing components not used
+        self.vehicle_api_client = None
+        self.milex_engine = None
+        self.pricing_manager = None
 
-        # Initialize recall service (uses Redis; safe to skip if not available)
-        try:
-            if self.redis_client:
-                self.recall_service = VehicleRecallService(redis_url)
-            else:
-                self.recall_service = None
-        except Exception as e:
-            logger.warning(f"Recall service init skipped: {e}")
-            self.recall_service = None
+        # SAIGE: vehicle recall service not used
+        self.recall_service = None
 
     @redis_circuit_breaker()
     @redis_retry()
@@ -315,25 +291,22 @@ class CompleteJAIMESSystem:
         
         logger.info(f"PREPARE_LLM_TURN: Current state: {state}, User input: '{user_input}'")
         
-        base_prompt = """
-You are James, an AI assistant for My-Lex Complete Auto Care. You're a helpful, friendly local from Durham, NC. Be relaxed and casual while staying about 55% professional.
+        base_prompt = f"""
+You are {config.assistant_name}, the {config.assistant_title} for {config.shop_name}. You're a warm, concierge-style spa expert from {config.shop_location}. Keep responses brief and welcoming.
 
 Tone and style:
-- Keep it calm and approachable; avoid corporate language
+- Calm and approachable; avoid corporate language
 - Use plain words and contractions (I'm, we'll, that's) but no slang
 - Short responses: usually 1–2 sentences before asking the next question
 - No exclamation points
 - Be concise: prefer 12–18 words per sentence; avoid filler and restating the user's answers
 
 Conversation rules:
-1. **One question at a time.** Ask a single, clear question, then wait.
-2. **Mileage services.** ALWAYS say mileage in full words, never digits (e.g., "sixty-thousand miles" NOT "60000 miles").
-3. **Use names sparingly.** Use the customer's name only once per conversation turn. Avoid repeating names in the same response.
-4. **No mileage intervals during diagnosis.** Only mention 30/60/90 during explicit upsell moments.
-5. **Vehicle accuracy.** Don’t change the user’s stated vehicle. If records differ, ask a quick confirmation instead of substituting.
-6. **Professional phrasing.** Avoid speculative idioms (e.g., "stab in the dark"). Prefer: "Based on what you've told me, the most likely cause is… We'll confirm with an inspection."
-7. **No unsupported options.** Do not invent service tiers (e.g., “standard” vs “express”), emails, or texts unless they are explicitly provided in the mission.
-8. **Scheduling truthfulness.** Never say something is “scheduled” until the date and time are confirmed. When asked to output a specific sentence, output exactly and only that sentence.
+1. Ask one question at a time.
+2. Don’t give medical advice; recommend consultation for clinical questions.
+3. Avoid PHI. Never ask for DOB/medical history unless explicitly needed for booking.
+4. No promises about availability or pricing unless provided by the mission.
+5. Never say something is “scheduled” until the date/time are confirmed.
 """
         # --- CHAPTER 1: CUSTOMER IDENTIFICATION ---
 
@@ -341,7 +314,7 @@ Conversation rules:
             customer_name = session.customer_profile.name if session.customer_profile else "our customer"
             user_affirmed = any(word in user_input.lower() for word in ['yes', 'yeah', 'yep', 'correct'])
             if user_input == "<BEGIN_CONVERSATION>":
-                mission = f"Say this exactly: 'Hi, this is James, your AI support specialist with My-Lex Complete Auto Care. I see this number is for {customer_name}. Am I speaking with the right person?'"
+                mission = f"Say this exactly: 'Hi, this is {config.assistant_name}, your {config.assistant_title} with {config.shop_name}. I see this number is for {customer_name}. Am I speaking with the right person?'"
             elif user_affirmed:
                 next_state = ConversationState.VEHICLE_CONFIRMATION
                 if session.customer_profile and session.customer_profile.service_history:
@@ -356,7 +329,7 @@ Conversation rules:
 
         elif state == ConversationState.PRIOR_SERVICE_CONFIRMATION:
             if user_input == "<BEGIN_CONVERSATION>":
-                mission = "Say this exactly: 'Hi, this is James, your AI support specialist with My-Lex Complete Auto Care. To get things started, have you had a vehicle serviced with us here before?'"
+                mission = f"Say this exactly: 'Hi, this is {config.assistant_name}, your {config.assistant_title} with {config.shop_name}. To get things started, have you visited us here before?'"
             elif any(word in user_input.lower() for word in ['yes', 'yeah', 'yep']):
                 next_state = ConversationState.PHONE_NUMBER_CLARIFICATION
                 mission = "The user is a returning customer. Say this exactly: 'Okay, thanks for clarifying. What phone number might the account be under?'"

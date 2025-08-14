@@ -13,7 +13,7 @@ class TestHealthAndBasicEndpoints:
         """Test root endpoint returns success."""
         response = client.get("/")
         assert response.status_code == 200
-        assert response.json() == {"message": "JAIMES AI Executive is running!"}
+        assert response.json() == {"message": "SAIGE is running!"}
     
     def test_application_startup(self, client):
         """Test application starts successfully."""

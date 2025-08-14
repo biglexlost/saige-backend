@@ -12,6 +12,7 @@ from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
+from config import config
 
 logger = logging.getLogger(__name__)
 
@@ -248,7 +249,7 @@ class EnhancedConversationIntelligence:
             },
             PersonalityTrait.PROFESSIONAL: {
                 "greeting": [
-                    "Good morning. I'm James, your service advisor.",
+                    f"Good morning. I'm {config.assistant_name}, your {config.assistant_title}.",
                     "Hello. Thank you for choosing My-Lex Complete Auto Care.",
                 ],
                 "empathy": [

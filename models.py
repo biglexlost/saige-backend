@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 from datetime import datetime, date
 from enum import Enum
 from typing import Any, Dict, List, Optional
+from config import config
 
 # --- Enums for Controlled Vocabularies ---
 
@@ -62,7 +63,7 @@ class IdentificationResult(BaseModel):
     verification_status: VerificationStatus
     customer_id: Optional[str] = None
     greeting: str = Field(
-        default="Thank you for calling My-Lex Complete Auto Care, this is James. To get started, what is the year, make, and model of your vehicle?"
+        default=f"Thank you for calling {config.shop_name}, this is {config.assistant_name}. How can I help you today?"
     )
 
 

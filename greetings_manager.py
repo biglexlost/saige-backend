@@ -1,6 +1,7 @@
 # src/greetings_manager.py
 import random
 from typing import List, Optional
+from config import config
 
 
 class GreetingsManager:
@@ -63,7 +64,7 @@ class GreetingsManager:
 
     def get_unrecognized_number_prompt(self) -> str:
         """Returns the prompt for unrecognized phone number flow."""
-        return "Hello. This is James from {shop_name}. I don't seem to have a record for this number. Are you a returning customer?"
+        return f"Hello. This is {config.assistant_name} from {{shop_name}}. I don't seem to have a record for this number. Are you a returning customer?"
 
     def get_unrecognized_number_alt_prompt(self) -> str:
         """Returns the prompt for asking for alternative contact info."""

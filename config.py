@@ -4,12 +4,10 @@ JAIMES AI Executive - Configuration Management
 Handles all configuration settings using Pydantic for robust validation.
 """
 
-import os
 import re
-from typing import Optional, List
-from pydantic_settings import BaseSettings
-from pydantic import BaseModel, Field, field_validator, SecretStr
+from typing import Optional, List, Dict
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field, field_validator, SecretStr
 
 
 def validate_redis_url(redis_url: str) -> None:
@@ -31,9 +29,36 @@ class Config(BaseSettings):
     """
 
     # --- Application Settings for GreetingsManager ---
-    shop_name: str = "My-Lex Complete Auto Care"
-    shop_location: str = "Durham"
+    shop_name: str = "Your Med Spa"
+    shop_location: str = "City"
     location_style: str = "standard"
+
+    # --- Assistant Identity ---
+    assistant_name: str = "SAIGE"
+    assistant_title: str = "Spa AI Guest Executive"
+
+    # --- Vertical / Domain ---
+    vertical: str = "medspa"
+
+    # --- Med-spa Service Catalog (JSON file; optional) ---
+    service_catalog_path: Optional[str] = "medspa_services.json"
+
+    # --- Booking Integration (pluggable adapter) ---
+    booking_provider: str = "none"  # e.g., boulevard | mindbody | aesthetic_record | none
+    booking_webhook_url: Optional[str] = None
+
+    # --- Hours & Call Routing (defaults; per-client overrides later) ---
+    business_hours: Dict[str, Dict[str, Optional[str]]] = {
+        "mon_fri": {"open": "09:00", "close": "18:00", "tz": "America/New_York"},
+        "sat": {"open": "10:00", "close": "16:00"},
+        "sun": {"open": None, "close": None},
+    }
+    overflow_strategy: str = "answer_and_queue"  # or transfer | voicemail
+    urgent_routing_number: Optional[str] = None
+
+    # --- Compliance Defaults ---
+    hipaa_mode: bool = True
+    analytics_enabled: bool = False
 
     # The Environment Switch
     # It will use the OS environment variable 'ENVIRONMENT', or default to "DEV" if not set.
