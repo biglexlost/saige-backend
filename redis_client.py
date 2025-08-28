@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Create the Redis client from the URL
-redis_client = redis.from_url(os.getenv("REST_URL"))
+redis_client = redis.from_url(os.getenv("REDIS_URL"))
 
 # --- The Key Prefixing Strategy ---
 SAIGE_PREFIX = "saige:"
