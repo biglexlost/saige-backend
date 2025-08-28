@@ -94,9 +94,10 @@ prepare_render() {
     echo "  2. Connect your GitHub repo to Render"
     echo "  3. Set environment variables in Render dashboard:"
     echo "     - GROQ_API_KEY"
-    echo "     - VEHICLE_DATABASE_API_KEY (optional)"
-    echo "     - PLATETOVIN_API_KEY (optional)"
-    echo "     - SHOPWARE_API_KEY (optional)"
+    echo "     - GROQ_MODEL"
+    echo "     - UPSTASH_REDIS_REST_URL"
+    echo "     - UPSTASH_REDIS_REST_TOKEN"
+    echo "     - VAPI_API_KEY"
     echo "  4. Deploy!"
 }
 

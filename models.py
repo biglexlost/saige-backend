@@ -26,23 +26,12 @@ class ConversationState(str, Enum):
     PRIOR_SERVICE_CONFIRMATION = "prior_service_confirmation"
     PHONE_NUMBER_CLARIFICATION = "phone_number_clarification"
 
-    # --- Vehicle & Service Identification ---
-    VEHICLE_CONFIRMATION = "vehicle_confirmation"  # Now used for new vehicles
-    VEHICLE_COLLECTION = "vehicle_collection"
-    COLLECT_MILEAGE = "collect_mileage"
-    COLLECT_NEW_CUSTOMER_NAME = "collect_new_customer_name"
-    CONFIRM_NEW_CUSTOMER_PHONE = "confirm_new_customer_phone"
-    SERVICE_INTAKE = "service_intake"
-    DIAGNOSTIC_QUESTIONING = "diagnostic_questioning"
-
-    # --- Scheduling Flow ---
-    ASK_ABOUT_ESTIMATE = "ask_about_estimate"
-    REQUEST_LICENSE_PLATE = "request_license_plate"
-    OFFER_ESTIMATE = "offer_estimate"
+    # --- Med-spa specific states ---
+    CONSENT = "consent"
+    SERVICE_SELECTION = "service_selection"
+    INTAKE_QA = "intake_qa"
     PROPOSE_SCHEDULING = "propose_scheduling"
-    AWAITING_TIMESLOT = "awaiting_timeslot"
     CONFIRM_APPOINTMENT = "confirm_appointment"
-
     CONVERSATION_COMPLETE = "conversation_complete"
 
 

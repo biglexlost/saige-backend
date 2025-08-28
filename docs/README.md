@@ -1,73 +1,78 @@
-# JAIMES Missing Modules Package
+# SAIGE Med-Spa AI Executive
 
 ## 🚀 What This Package Contains
 
-This package contains the **4 missing Python modules** that were causing the import error in your JAIMES deployment. These modules were referenced in your main JAIMES system but weren't included in your GitHub repository.
+SAIGE is an intelligent AI executive system designed specifically for med-spa businesses. It handles customer conversations, service selection, intake questionnaires, and integrates with your CRM automation workflows.
 
-## 📦 Files Included
+## 📦 Core Components
 
-### **Core Missing Modules**
-- `customer_identification_system.py` - Customer identification and verification engine
-- `returning_customer_flow.py` - Returning customer conversation flow manager  
-- `shopware_customer_recognition.py` - Shop-Ware customer recognition and data retrieval
-- `streamlined_jaimes_two_path.py` - Two-path vehicle collection system (license plate vs manual)
+### **Main System**
+- `complete_saige.py` - Core SAIGE AI executive with med-spa conversation flow
+- `medspa_service_catalog.py` - Service catalog with CRM tag integration
+- `booking_adapter.py` - Appointment booking and scheduling integration
 
-## 🎯 How to Use
+### **Supporting Modules**
+- `customer_identification_system.py` - Customer lookup and identification engine
+- `returning_customer_flow.py` - Returning customer conversation management
+- `session_manager.py` - Session persistence and Redis integration
+- `main.py` - FastAPI application entry point
 
-### **Add to Your GitHub Repository**
-1. Copy all 4 Python files to your GitHub repository root
-2. Commit and push the changes
-3. Redeploy on Render - the import error should be resolved!
+## 🎯 Key Features
 
-## 🔧 What This Fixes
+### **Med-Spa Service Management**
+- **6 Core Services**: consultation, facial, botox, filler, laser, massage
+- **CRM Tag Integration**: Automatic tag application based on service selection
+- **Automation Phase Detection**: Triggers appropriate nurture campaigns
+- **Tailored Intake Questions**: Service-specific questionnaires
 
-### **Import Error Fixed:**
-✅ **"No module named 'customer_identification_system'"** - Module now available  
-✅ **All related import dependencies** - Complete module chain resolved  
-✅ **Customer recognition functionality** - Full Shop-Ware integration ready  
-✅ **Two-path vehicle collection** - License plate and manual collection paths  
+### **Conversation Intelligence**
+- **State Machine**: Guided conversation flow from greeting to booking
+- **Customer Recognition**: Identifies returning vs. new customers
+- **Service Matching**: Natural language service identification
+- **Progressive Intake**: Step-by-step customer information collection
 
-## 🎭 **Module Functions:**
+### **CRM Integration**
+- **Automation Triggers**: Phase 1-4 automation workflows
+- **Tag Management**: RFM segmentation, membership status, engagement tracking
+- **Data Collection**: Structured intake data for your automation campaigns
 
-### **customer_identification_system.py**
-- Customer identification by phone number
-- Customer verification and lookup
-- Mock data for testing mode
-- Shop-Ware integration ready
+## 🔧 Configuration
 
-### **returning_customer_flow.py**  
-- Proactive greetings for returning customers
-- Service history integration
-- Upcoming service suggestions
-- Customer context management
+### **Required Environment Variables**
+- `GROQ_API_KEY` - LLM integration
+- `GROQ_MODEL` - Model selection (default: llama3-8b-8192)
+- `UPSTASH_REDIS_REST_URL` - Redis connection
+- `UPSTASH_REDIS_REST_TOKEN` - Redis authentication
+- `VAPI_API_KEY` - Voice API integration
 
-### **shopware_customer_recognition.py**
-- Customer profile management
-- Vehicle profile handling
-- Service history retrieval
-- Shop-Ware API integration
+### **Deployment**
+- **Render Ready**: Configured for Render deployment
+- **Redis Fallback**: Graceful fallback to in-memory storage
+- **Environment Detection**: Automatic DEV/PROD configuration
 
-### **streamlined_jaimes_two_path.py**
-- Path A: License plate + ZIP lookup
-- Path B: Manual vehicle collection
-- Smart path determination
-- Vehicle information validation
+## 🎭 Conversation Flow
+
+1. **Customer Verification** → Identify returning vs. new customers
+2. **Service Selection** → Match customer needs to available services
+3. **Intake Questions** → Progressive service-specific questionnaires
+4. **Scheduling** → Find available slots and confirm appointments
+5. **CRM Integration** → Apply tags and trigger automation phases
 
 ## 🚨 Important Notes
 
-- **All modules include testing mode** - Work with mock data when APIs aren't connected
-- **Shop-Ware integration ready** - Will work with real APIs when configured
-- **No changes to existing code needed** - Just add these files to your repository
-- **Complete functionality** - All customer recognition and vehicle collection features
+- **No Automotive Code**: All old JAIMES automotive functionality removed
+- **Med-Spa Focused**: Built specifically for med-spa business processes
+- **CRM Ready**: Integrates with your existing CRM tags and automations
+- **Testing Mode**: Includes mock data for development and testing
 
 ## 🎯 Next Steps
 
-1. **Add these 4 files** to your GitHub repository root
-2. **Commit and push** the changes
-3. **Redeploy on Render** - import error should be completely resolved
-4. **Test the system** - All customer recognition features will now work
+1. **Deploy to Render** - All configuration issues resolved
+2. **Connect Your CRM** - Map your tags to automation phases
+3. **Customize Services** - Add your specific service offerings
+4. **Test Conversations** - Verify med-spa conversation flows
 
 ---
 
-*These modules complete your JAIMES system and resolve all import dependency issues!*
+*SAIGE: Your intelligent med-spa AI executive for seamless customer experiences and CRM automation!*
 

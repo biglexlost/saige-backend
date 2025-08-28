@@ -108,16 +108,10 @@ async def add_security_headers(request: Request, call_next):
 vapi_client = VAPIServerClient(api_key=os.getenv("VAPI_API_KEY"))
 
 try:
-    from complete_saige import CompleteJAIMESSystem
-    # Initialize CompleteJAIMESSystem - it now handles its own Redis Session Management
-    jaimes = CompleteJAIMESSystem(
-        vapi_api_key=config.vapi_api_key.get_secret_value(),
-        shopware_api_key=config.shopware_api_key.get_secret_value() if config.shopware_api_key else None,
-        shopware_store_url=config.shopware_store_url,
+    from complete_saige import CompleteSAIGESystem
+    # Initialize CompleteJAIMESSystem (mechanic-specific integrations removed)
+    jaimes = CompleteSAIGESystem(
         groq_api_key=config.groq_api_key.get_secret_value(),
-        vehicle_db_api_key=config.vehicle_db_api_key.get_secret_value() if config.vehicle_db_api_key else None,
-        license_plate_api_key=config.license_plate_api_key.get_secret_value() if config.license_plate_api_key else None,
-        milex_location_id=config.milex_location_id,
         redis_url=config.redis_url,
     )
     # Mark initialized for health checks and tests that patch the symbol

@@ -1,5 +1,5 @@
 """
-Health check endpoints for JAIMES application.
+Health check endpoints for SAIGE application.
 Provides comprehensive health monitoring for production deployments.
 """
 from fastapi import APIRouter, HTTPException
@@ -119,11 +119,7 @@ async def check_external_apis() -> Dict[str, Any]:
         "configured": bool(config.vapi_api_key)
     }
     
-    checks["vehicle_db_api"] = {
-        "status": "unknown",
-        "reason": "Lightweight check - API key present",
-        "configured": bool(config.vehicle_db_api_key)
-    }
+    # Mechanic-specific checks removed
     
     return checks
 
@@ -261,12 +257,12 @@ async def health_metrics():
     
     # Simple metrics format
     metrics = {
-        "jaimes_redis_healthy": 1 if redis_check["status"] == "healthy" else 0,
-        "jaimes_redis_latency_ms": redis_check.get("latency_ms", 0),
-        "jaimes_analytics_events_total": db_checks.get("analytics_db", {}).get("event_count", 0),
-        "jaimes_pricing_cache_entries_total": db_checks.get("pricing_cache_db", {}).get("cached_entries", 0),
-        "jaimes_disk_usage_percent": disk_check.get("usage_percent", 0),
-        "jaimes_disk_free_gb": disk_check.get("free_gb", 0),
+        "saige_redis_healthy": 1 if redis_check["status"] == "healthy" else 0,
+        "saige_redis_latency_ms": redis_check.get("latency_ms", 0),
+        "saige_analytics_events_total": db_checks.get("analytics_db", {}).get("event_count", 0),
+        "saige_pricing_cache_entries_total": db_checks.get("pricing_cache_db", {}).get("cached_entries", 0),
+        "saige_disk_usage_percent": disk_check.get("usage_percent", 0),
+        "saige_disk_free_gb": disk_check.get("free_gb", 0),
     }
     
     return metrics

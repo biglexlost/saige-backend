@@ -10,195 +10,153 @@ Date: July 20, 2025
 """
 
 import asyncio
-from datetime import datetime, timedelta
+import re
 from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, field
-import logging
+from datetime import datetime, timedelta
+import structlog
 
-# Set up logging
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
-
-@dataclass
 class ReturningCustomerContext:
-    """Context information for returning customers"""
-
-    customer_id: str
-    name: str
-    phone_number: str
-    vehicles: List[Dict[str, Any]]
-    service_history: List[Dict[str, Any]]
-    last_service_date: Optional[str] = None
-    preferred_vehicle: Optional[Dict[str, Any]] = None
-    upcoming_services: List[Dict[str, Any]] = field(default_factory=list)
-
+    """Context for returning customer conversations in med-spa setting"""
+    
+    def __init__(self, customer_id: str, customer_data: Dict[str, Any]):
+        self.customer_id = customer_id
+        self.customer_data = customer_data
+        self.conversation_start = datetime.now()
+        self.topics_discussed = []
+        self.services_mentioned = []
+        self.preferences_identified = []
+        
+    def add_topic(self, topic: str):
+        """Track topics discussed in conversation"""
+        if topic not in self.topics_discussed:
+            self.topics_discussed.append(topic)
+            
+    def add_service(self, service: str):
+        """Track services mentioned by customer"""
+        if service not in self.services_mentioned:
+            self.services_mentioned.append(service)
+            
+    def add_preference(self, preference: str):
+        """Track customer preferences identified"""
+        if preference not in self.preferences_identified:
+            self.preferences_identified.append(preference)
+            
+    def get_conversation_summary(self) -> Dict[str, Any]:
+        """Get summary of conversation for analytics"""
+        return {
+            "customer_id": self.customer_id,
+            "conversation_duration_minutes": (datetime.now() - self.conversation_start).total_seconds() / 60,
+            "topics_discussed": self.topics_discussed,
+            "services_mentioned": self.services_mentioned,
+            "preferences_identified": self.preferences_identified,
+            "timestamp": self.conversation_start.isoformat()
+        }
 
 class ReturningCustomerFlowManager:
-    """
-    Manages conversation flow for returning customers
-    """
-
-    def __init__(self, shopware_client=None, testing_mode: bool = False):
+    """Manages conversation flow for returning customers in med-spa setting"""
+    
+    def __init__(self, testing_mode: bool = False):
         """
         Initialize the returning customer flow manager
-
+        
         Args:
-            shopware_client: Shop-Ware API client for customer data
-            testing_mode: If True, use mock data instead of real API calls
+            testing_mode: If True, use mock data instead of real customer data
         """
-        self.shopware_client = shopware_client
         self.testing_mode = testing_mode
-        self.logger = logging.getLogger(__name__)
-
-    async def get_customer_context(
-        self, customer_id: str
-    ) -> Optional[ReturningCustomerContext]:
-        """Get complete context for a returning customer"""
+        self.logger = logger
+        
+        # Mock customer data for testing
+        self.mock_customers = {
+            "1": {
+                "customer_id": "1",
+                "name": "Alex Johnson",
+                "phone": "1234567890",
+                "email": "alex@example.com",
+                "service_history": ["facial", "massage"],
+                "last_visit": "2024-01-15",
+                "preferences": ["anti-aging", "relaxation"],
+                "membership_status": "active",
+                "favorite_services": ["hydrafacial", "hot stone massage"]
+            },
+            "2": {
+                "customer_id": "2",
+                "name": "Sarah Smith", 
+                "phone": "5551234567",
+                "email": "sarah@example.com",
+                "service_history": ["botox", "filler"],
+                "last_visit": "2024-02-20",
+                "preferences": ["wrinkle reduction", "volume restoration"],
+                "membership_status": "active",
+                "favorite_services": ["botox", "lip filler"]
+            }
+        }
+    
+    async def get_customer_context(self, customer_id: str) -> Optional[ReturningCustomerContext]:
+        """Get customer context for conversation management"""
         try:
-            return await self._get_shopware_customer_context(customer_id)
+            if self.testing_mode:
+                customer_data = self.mock_customers.get(customer_id)
+            else:
+                # In production, this would fetch from your CRM/database
+                customer_data = await self._get_real_customer_data(customer_id)
+                
+            if customer_data:
+                return ReturningCustomerContext(customer_id, customer_data)
+            return None
+            
         except Exception as e:
             self.logger.error(f"Error getting customer context: {e}")
             return None
-
-    async def generate_proactive_greeting(
-        self, context: ReturningCustomerContext
-    ) -> str:
-        """Generate a proactive greeting for returning customers"""
+    
+    async def suggest_next_service(self, customer_id: str, current_service: str) -> Optional[str]:
+        """Suggest next service based on customer history and preferences"""
         try:
-            primary_vehicle = self._get_primary_vehicle(context)
-            vehicle_desc = (
-                f"{primary_vehicle['year']} {primary_vehicle['make']} {primary_vehicle['model']}"
-                if primary_vehicle
-                else "your vehicle"
-            )
-
-            greeting_parts = [f"Welcome back, {context.name}!"]
-            if primary_vehicle:
-                greeting_parts.append(f"I see you have the {vehicle_desc}.")
-
-            # Add proactive service suggestions from notes
-            if context.service_history and "notes" in context.service_history[0]:
-                notes = context.service_history[0]["notes"].lower()
-                if "brake" in notes:
-                    greeting_parts.append("How are those brakes feeling?")
-                elif "oil change" in notes:
-                    greeting_parts.append("Are you due for that oil change?")
-
-            greeting_parts.append("What can I help you with today?")
-            return " ".join(greeting_parts)
-        except Exception as e:
-            self.logger.error(f"Error generating proactive greeting: {e}")
-            return f"Welcome back, {context.name}! What can I help you with today?"
-
-    async def suggest_upcoming_services(
-        self, context: ReturningCustomerContext
-    ) -> List[str]:
-        """Suggest upcoming services based on customer history"""
-        suggestions = []
-        try:
-            primary_vehicle = self._get_primary_vehicle(context)
-            if not primary_vehicle:
-                return suggestions
-
-            current_mileage = primary_vehicle.get("mileage", 0)
-            if context.service_history:
-                last_service = context.service_history[0]
-                last_mileage = last_service.get("mileage", 0)
-                if current_mileage - last_mileage >= 4500:
-                    suggestions.append(
-                        "You're due for an oil change based on your mileage."
-                    )
-
-            # Seasonal suggestions
-            current_month = datetime.now().month
-            if current_month in [10, 11, 12]:
-                suggestions.append(
-                    "With winter coming up, we could check your battery and heating system."
-                )
-            elif current_month in [3, 4, 5]:
-                suggestions.append(
-                    "Spring's a great time for a tune-up after the winter months."
-                )
-        except Exception as e:
-            self.logger.error(f"Error suggesting upcoming services: {e}")
-        return suggestions
-
-    def _get_primary_vehicle(
-        self, context: ReturningCustomerContext
-    ) -> Optional[Dict[str, Any]]:
-        """Get the customer's primary vehicle"""
-        if not context.vehicles:
-            return None
-        for vehicle in context.vehicles:
-            if vehicle.get("is_primary"):
-                return vehicle
-        return context.vehicles[0]
-
-    def _days_since_last_service(
-        self, context: ReturningCustomerContext
-    ) -> Optional[int]:
-        """Calculate days since last service"""
-        if not context.last_service_date:
-            return None
-        try:
-            last_service = datetime.strptime(context.last_service_date, "%Y-%m-%d")
-            return (datetime.now() - last_service).days
-        except Exception:
-            return None
-
-    async def _get_shopware_customer_context(
-        self, customer_id: str
-    ) -> Optional[ReturningCustomerContext]:
-        """Get real customer context from Shop-Ware"""
-        if not self.shopware_client:
-            return None
-        try:
-            # Assumes shopware_client has these methods
-            customer = await self.shopware_client.get_customer(customer_id)
-            if not customer:
+            context = await self.get_customer_context(customer_id)
+            if not context:
                 return None
-
-            vehicles = await self.shopware_client.get_customer_vehicles(customer_id)
-            service_history = await self.shopware_client.get_customer_service_history(
-                customer_id
-            )
-
-            return ReturningCustomerContext(
-                customer_id=customer_id,
-                name=f"{customer.get('firstName', '')} {customer.get('lastName', '')}".strip(),
-                phone_number=customer.get("phone", ""),
-                vehicles=vehicles or [],
-                service_history=service_history or [],
-                last_service_date=(
-                    service_history[0].get("date") if service_history else None
-                ),
-            )
+                
+            customer_data = context.customer_data
+            service_history = customer_data.get("service_history", [])
+            preferences = customer_data.get("preferences", [])
+            
+            # Simple recommendation logic
+            if "facial" in service_history and "anti-aging" in preferences:
+                return "botox"
+            elif "botox" in service_history and "volume" in preferences:
+                return "filler"
+            elif "massage" in service_history and "relaxation" in preferences:
+                return "facial"
+            else:
+                return "consultation"
+                
         except Exception as e:
-            self.logger.error(f"Error getting Shop-Ware customer context: {e}")
+            self.logger.error(f"Error suggesting next service: {e}")
             return None
-
-
-# Example usage and testing
-if __name__ == "__main__":
-
-    async def test_returning_customer_flow():
-        """Test the returning customer flow manager"""
-        manager = ReturningCustomerFlowManager(testing_mode=True)
-
-        print("Testing customer context...")
-        context = await manager.get_customer_context("CUST_001")
-        if context:
-            print(f"Customer: {context.name}")
-
-            print("\nTesting proactive greeting...")
-            greeting = await manager.generate_proactive_greeting(context)
-            print(f"Greeting: {greeting}")
-
-            print("\nTesting service suggestions...")
-            suggestions = await manager.suggest_upcoming_services(context)
-            for i, suggestion in enumerate(suggestions, 1):
-                print(f"{i}. {suggestion}")
-        else:
-            print("No customer context found")
-
-    asyncio.run(test_returning_customer_flow())
+    
+    async def get_customer_preferences(self, customer_id: str) -> Dict[str, Any]:
+        """Get customer preferences for personalized service"""
+        try:
+            context = await self.get_customer_context(customer_id)
+            if not context:
+                return {}
+                
+            customer_data = context.customer_data
+            return {
+                "preferred_services": customer_data.get("favorite_services", []),
+                "preferences": customer_data.get("preferences", []),
+                "membership_status": customer_data.get("membership_status", "none"),
+                "last_visit": customer_data.get("last_visit"),
+                "service_history": customer_data.get("service_history", [])
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error getting customer preferences: {e}")
+            return {}
+    
+    async def _get_real_customer_data(self, customer_id: str) -> Optional[Dict[str, Any]]:
+        """Get real customer data from CRM/database"""
+        # This would be implemented to connect to your actual customer database
+        # For now, return None to indicate no real data available
+        return None

@@ -1,4 +1,4 @@
-# JAIMES AI Executive - Render.com Optimized Dockerfile
+# SAIGE - Med Spa AI Voice Executive - Render.com Optimized Dockerfile
 FROM python:3.11-slim
 
 # Set working directory

@@ -1,4 +1,4 @@
-# JAIMES AI Executive - Production Dockerfile
+# SAIGE - Med Spa AI Voice Executive - Production Dockerfile
 FROM python:3.11-slim
 
 # Set working directory
