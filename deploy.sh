@@ -95,8 +95,7 @@ prepare_render() {
     echo "  3. Set environment variables in Render dashboard:"
     echo "     - GROQ_API_KEY"
     echo "     - GROQ_MODEL"
-    echo "     - UPSTASH_REDIS_REST_URL"
-    echo "     - UPSTASH_REDIS_REST_TOKEN"
+    echo "     - REDIS_URL"
     echo "     - VAPI_API_KEY"
     echo "  4. Deploy!"
 }

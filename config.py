@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-JAIMES AI Executive - Configuration Management
+SAIGE AI Executive - Configuration Management
 Handles all configuration settings using Pydantic for robust validation.
 """
 
@@ -78,11 +78,7 @@ class Config(BaseSettings):
     # --- External URLs ---
     redis_url: str = Field(
         default="redis://localhost:6379",
-        description="Redis connection URL with fallbacks for Upstash"
-    )
-    upstash_rest_token: Optional[str] = Field(
-        default=None,
-        description="Upstash Redis REST token for authentication"
+        description="Redis connection URL"
     )
     discord_webhook_url: Optional[str] = (
         None  # Make this optional if you don't want local Discord alerts
@@ -105,7 +101,7 @@ class Config(BaseSettings):
     @field_validator("redis_url", mode="before")
     @classmethod
     def validate_redis_url(cls, v: Any) -> str:
-        """Ensures the Redis URL has a valid scheme or is a valid Upstash REST URL."""
+        """Ensures the Redis URL has a valid scheme."""
         if not v:
             # During deployment, allow empty redis_url to fall back to in-memory
             return "redis://localhost:6379"
@@ -114,35 +110,13 @@ class Config(BaseSettings):
         if v.startswith(("redis://", "rediss://")):
             return v
             
-        # Allow Upstash REST URLs (https://...)
-        if v.startswith("https://") and "upstash.io" in v:
-            return v
-            
         # Allow localhost fallback for development
         if v == "localhost" or v == "127.0.0.1":
             return "redis://localhost:6379"
             
         # If we get here, it's an invalid URL format
-        raise ValueError(f"Invalid Redis URL: Must be redis://, rediss://, or valid Upstash REST URL. Got: {v}")
+        raise ValueError(f"Invalid Redis URL: Must be redis:// or rediss://. Got: {v}")
 
 
 # Create a single, global instance of the configuration that the rest of the app can import
 config = Config()
-
-# Support Upstash env var names: if UPSTASH_REDIS_REST_URL is set, use it
-import os as _os
-upstash_rest_url = _os.getenv("UPSTASH_REDIS_REST_URL")
-upstash_rest_token = _os.getenv("UPSTASH_REDIS_REST_TOKEN")
-
-if upstash_rest_url and upstash_rest_token:
-    # For Upstash REST, we need to construct a proper Redis-compatible URL
-    # The actual Redis client will need to handle REST URLs differently
-    try:
-        # Store both URL and token for the Redis client to use
-        object.__setattr__(config, "redis_url", upstash_rest_url)
-        object.__setattr__(config, "upstash_rest_token", upstash_rest_token)
-        print(f"Using Upstash REST URL: {upstash_rest_url}")
-        print("Note: Upstash REST requires special Redis client handling")
-    except Exception as e:
-        print(f"Warning: Could not set Upstash REST config: {e}")
-        pass

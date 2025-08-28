@@ -41,8 +41,7 @@ SAIGE is an intelligent AI executive system designed specifically for med-spa bu
 ### **Required Environment Variables**
 - `GROQ_API_KEY` - LLM integration
 - `GROQ_MODEL` - Model selection (default: llama3-8b-8192)
-- `UPSTASH_REDIS_REST_URL` - Redis connection
-- `UPSTASH_REDIS_REST_TOKEN` - Redis authentication
+- `REDIS_URL` - Redis connection
 - `VAPI_API_KEY` - Voice API integration
 
 ### **Deployment**
