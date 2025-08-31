@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-JAIMES AI Executive - Main Entry Point for Render
+SAIGE AI Executive - Main Entry Point for Render
 """
 import os
 import copy  # Used by some logging, keep if needed elsewhere
@@ -9,6 +9,7 @@ import uuid
 import json
 from typing import Optional, List, Dict, Any
 from time import perf_counter
+from datetime import datetime
 
 # --- Pydantic and FastAPI Imports ---
 from fastapi import FastAPI, Request, HTTPException
@@ -109,7 +110,7 @@ vapi_client = VAPIServerClient(api_key=os.getenv("VAPI_API_KEY"))
 
 try:
     from complete_saige import CompleteSAIGESystem
-    # Initialize CompleteJAIMESSystem (mechanic-specific integrations removed)
+    # Initialize CompleteSAIGESystem (mechanic-specific integrations removed)
     jaimes = CompleteSAIGESystem(
         groq_api_key=config.groq_api_key.get_secret_value(),
         redis_url=config.redis_url,
@@ -119,7 +120,7 @@ try:
     logger.info("All services initialized successfully.")
 except Exception as e:
     logger.error(f"🚨 CRITICAL STARTUP FAILURE: {e}", exc_info=True)
-    send_discord_alert(content=f"❌ JAIMES failed to initialize: {e}")
+    send_discord_alert(content=f"❌ SAIGE failed to initialize: {e}")
     jaimes = None  # Set to None to prevent further errors if initialization failed
 
 
@@ -161,7 +162,7 @@ async def chat_completions(request: Request, data: VapiWebhookRequest):
         jaimes_initialized = getattr(jaimes, "is_initialized", None) is True
         # Treat JAIMES as required if no messages were provided, even in TEST
         if (jaimes is None) or ((not jaimes_initialized) and (len(data.messages) == 0 or not is_test_env)):
-            raise HTTPException(status_code=503, detail="JAIMES system not available.")
+            raise HTTPException(status_code=503, detail="SAIGE system not available.")
 
         # Determine Session ID
         session_id = data.call.id  # Correct, 'call' is top-level now
@@ -281,7 +282,7 @@ async def chat_completions(request: Request, data: VapiWebhookRequest):
         if isinstance(e, HTTPException):
             raise
         # send_discord_alert(content=f"❌ Unhandled error in chat completion for session `{log_session_id}`: {e}")
-        raise HTTPException(status_code=500, detail="JAIMES encountered a critical error.")
+        raise HTTPException(status_code=500, detail="SAIGE encountered a critical error.")
 
     finally:
         # --- This 'finally' will always run to report performance ---
@@ -304,7 +305,7 @@ async def get_session_data(session_id: str):
     # Check availability; relax in TEST for MagicMocks
     is_test_env = (getattr(config, "environment", "").upper() == "TEST") or (os.getenv("ENVIRONMENT", "").upper() == "TEST")
     if (jaimes is None) or (not is_test_env and getattr(jaimes, "is_initialized", None) is not True):
-        raise HTTPException(status_code=503, detail="JAIMES system not available.")
+        raise HTTPException(status_code=503, detail="SAIGE system not available.")
 
     # Safely handle internal errors
     try:
@@ -316,3 +317,27 @@ async def get_session_data(session_id: str):
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
     return session
+
+
+# --- Health Check Endpoint ---
+@app.get("/health")
+async def health_check():
+    """Basic health check endpoint."""
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
+
+# --- Server Startup ---
+if __name__ == "__main__":
+    import uvicorn
+    
+    # Get port from environment or default to 8000
+    port = int(os.getenv("PORT", "8000"))
+    
+    # Start the FastAPI server
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",  # Bind to all interfaces for container deployment
+        port=port,
+        log_level="info",
+        reload=False  # Disable reload in production
+    )
