@@ -41,10 +41,10 @@ def client():
 @pytest.fixture
 def sample_session():
     """Sample JAIMES session for testing."""
-    from models import JAIMESSession, ConversationState
+    from models import SAIGESession, ConversationState
     from datetime import datetime
     
-    return JAIMESSession(
+    return SAIGESession(
         session_id="test-session-123",
         caller_phone="1234567890",
         conversation_state=ConversationState.CUSTOMER_VERIFICATION,

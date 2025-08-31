@@ -1,5 +1,5 @@
 import pytest
-from models import JAIMESSession, ConversationState, ChatMessage, CustomerProfile
+from models import SAIGESession, ConversationState, ChatMessage, CustomerProfile
 from complete_saige import CompleteSAIGESystem
 from medspa_service_catalog import match_service
 
@@ -7,7 +7,7 @@ from medspa_service_catalog import match_service
 @pytest.mark.asyncio
 async def test_new_customer_intro_and_timeslot(monkeypatch):
     system = CompleteSAIGESystem(groq_api_key="test", redis_url="redis://localhost:6379")
-    session = JAIMESSession(
+    session = SAIGESession(
         session_id="s1",
         caller_phone="1234567890",
         conversation_state=ConversationState.PRIOR_SERVICE_CONFIRMATION,
@@ -47,7 +47,7 @@ async def test_new_customer_intro_and_timeslot(monkeypatch):
 @pytest.mark.asyncio
 async def test_returning_customer_phone_lookup(monkeypatch):
     system = CompleteSAIGESystem(groq_api_key="test", redis_url="redis://localhost:6379")
-    session = JAIMESSession(
+    session = SAIGESession(
         session_id="s2",
         caller_phone="1234567890",
         conversation_state=ConversationState.PRIOR_SERVICE_CONFIRMATION,

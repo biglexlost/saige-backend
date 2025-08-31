@@ -293,7 +293,7 @@ async def chat_completions(request: Request, data: VapiWebhookRequest):
 
 
 # --- Sessions Endpoint (Now uses jaimes for session management) ---
-@app.get("/sessions/{session_id}", response_model=JAIMESSession)
+@app.get("/sessions/{session_id}", response_model=SAIGESession)
 async def get_session_data(session_id: str):
     # Validate session_id format first so invalid IDs don't depend on JAIMES availability
     import re as _re

@@ -18,11 +18,11 @@ from tenacity import (
 )
 import redis.exceptions
 from utils import send_discord_alert
-from models import JAIMESSession  # Import JAIMESSession from models.py
+from models import SAIGESession  # Import SAIGESession from models.py
 
-# This assumes your JAIMESSession model is in this file.
-# When you restructure your project, you'll change this to `from models.schemas import JAIMESSession`.
-# Removed stale import from the old module name. JAIMESSession now lives in models.py
+# This assumes your SAIGESession model is in this file.
+# When you restructure your project, you'll change this to `from models.schemas import SAIGESession`.
+# Removed stale import from the old module name. SAIGESession now lives in models.py
 
 # It's recommended to install redis with: pip install redis
 try:
@@ -162,15 +162,15 @@ class RedisSessionManager:
         retry=retry_if_exception_type(redis.exceptions.ConnectionError),
         before_sleep=_log_retry_attempt,  # ✅ Correctly logs before each retry
     )
-    def get_session(self, session_id: str) -> Optional["JAIMESSession"]:
+    def get_session(self, session_id: str) -> Optional["SAIGESession"]:
         """Retrieves a session from Redis by its ID."""
         self._ensure_connection()
         session_key = f"session:{session_id}"
         session_data = self.redis_client.get(session_key)
         if session_data:
             logger.info(f"Session cache HIT for session_id: {session_id}")
-            # Replace JAIMESSession with your actual session class
-            return JAIMESSession(**json.loads(session_data))
+            # Replace SAIGESession with your actual session class
+            return SAIGESession(**json.loads(session_data))
         else:
             logger.info(f"Session cache MISS for session_id: {session_id}")
             return None
@@ -181,7 +181,7 @@ class RedisSessionManager:
         retry=retry_if_exception_type(redis.exceptions.ConnectionError),
         before_sleep=_log_retry_attempt,
     )
-    def save_session(self, session_id: str, session_obj: "JAIMESSession") -> None:
+    def save_session(self, session_id: str, session_obj: "SAIGESession") -> None:
         """Saves a session object to Redis."""
         self._ensure_connection()
         session_key = f"session:{session_id}"

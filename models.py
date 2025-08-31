@@ -79,27 +79,25 @@ class CustomerProfile(BaseModel):
     service_history: List[ServiceHistoryEntry] = Field(default_factory=list)
 
 
-class JAIMESSession(BaseModel):
-    """Complete JAIMES conversation session"""
+class SAIGESession(BaseModel):
+    """Complete SAIGE conversation session for med-spa"""
 
     session_id: str
     caller_phone: str
     conversation_state: ConversationState
     identification_result: Optional[IdentificationResult] = None
     customer_profile: Optional[CustomerProfile] = None
-    vehicle_info: Optional[VehicleInfo] = None
     conversation_history: List[Dict[str, Any]] = Field(default_factory=list)
-    symptoms: List[str] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=datetime.now)
     last_updated: datetime = Field(default_factory=datetime.now)
     total_interactions: int = 0
-    last_service_date: Optional[datetime] = None
     temp_data: Dict[str, Any] = Field(default_factory=dict)
     pending_questions: List[str] = Field(default_factory=list)
     last_question_asked: Optional[str] = None
-    upsell_service_description: Optional[str] = None
-    diagnostic_turn_count: int = 0
     services_to_book: List[str] = Field(default_factory=list)
+    consent_given: bool = False
+    service_preferences: List[str] = Field(default_factory=list)
+    scheduling_preferences: Dict[str, Any] = Field(default_factory=dict)
 
     def update_state(self, new_state: ConversationState):
         """Update conversation state and timestamp"""

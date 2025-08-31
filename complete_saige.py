@@ -11,7 +11,7 @@ from enhanced_conversation_intelligence import EnhancedConversationIntelligence 
 from enhanced_streaming import EnhancedStreamer as StreamingResponseManager, StreamingMode
 from medspa_service_catalog import match_service, MEDSPA_SERVICES, get_crm_tags_for_service, get_automation_phase_for_tags
 from booking_adapter import BookingAdapter
-from models import ConversationState, JAIMESSession, CustomerProfile, ChatMessage
+from models import ConversationState, SAIGESession, CustomerProfile, ChatMessage
 from mock_db import MockCustomerEngine
 from circuitbreaker import circuit
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
@@ -140,7 +140,7 @@ class CompleteSAIGESystem:
         self.redis_url = redis_url
         self.redis_client = None
         logger.info("Redis connection will be established on first use.")
-        self.in_memory_sessions: Dict[str, JAIMESSession] = {}
+        self.in_memory_sessions: Dict[str, SAIGESession] = {}
 
         # Initialize analytics DB and leads table (HIPAA-safe metadata only)
         init_analytics_db()
@@ -186,13 +186,13 @@ class CompleteSAIGESystem:
 
     @redis_circuit_breaker()
     @redis_retry()
-    def get_session(self, session_id: str) -> Optional[JAIMESSession]:
+    def get_session(self, session_id: str) -> Optional[SAIGESession]:
         self._ensure_redis_connection()
         try:
             if self.redis_client and self.redis_client.ping():
                 session_json = self.redis_client.get(session_id)
                 if session_json:
-                    return JAIMESSession.model_validate_json(session_json)
+                    return SAIGESession.model_validate_json(session_json)
         except (redis.exceptions.ConnectionError, redis.exceptions.TimeoutError) as e:
             logger.warning(f"Redis connection/timeout error on GET: {e}. Falling back to memory.")
         except Exception as e:
@@ -201,7 +201,7 @@ class CompleteSAIGESystem:
 
     @redis_circuit_breaker()
     @redis_retry()
-    def save_session(self, session_id: str, session: JAIMESSession):
+    def save_session(self, session_id: str, session: SAIGESession):
         self._ensure_redis_connection()
         try:
             if self.redis_client and self.redis_client.ping():
@@ -244,7 +244,7 @@ class CompleteSAIGESystem:
             if customer_profile
             else ConversationState.PRIOR_SERVICE_CONFIRMATION
         )
-        session = JAIMESSession(
+        session = SAIGESession(
             session_id=session_id,
             caller_phone=caller_phone,
             conversation_state=session_state,
@@ -262,7 +262,7 @@ class CompleteSAIGESystem:
         ):
             yield chunk
 
-    async def _prepare_llm_turn(self, user_input: str, session: JAIMESSession) -> (str, ConversationState):
+    async def _prepare_llm_turn(self, user_input: str, session: SAIGESession) -> (str, ConversationState):
         # Safety check for input and decode HTML entities
         if not user_input:
             user_input = ""
@@ -469,7 +469,7 @@ Conversation rules:
         t = re.sub(r"\s+", " ", t)
         return t
 
-    def _determine_probable_cause(self, session: JAIMESSession) -> str:
+    def _determine_probable_cause(self, session: SAIGESession) -> str:
         """Determine the most likely cause based on comprehensive diagnostic information."""
         conversation_text = ' '.join([msg.get('content', '') for msg in session.conversation_history])
         conversation_text = conversation_text.lower()
@@ -503,7 +503,7 @@ Conversation rules:
     @groq_circuit_breaker()
     @groq_retry()
     async def _call_llm_and_stream(
-        self, system_prompt: str, session: JAIMESSession
+        self, system_prompt: str, session: SAIGESession
     ) -> AsyncGenerator[str, None]:
         llm_messages = [
             {"role": "system", "content": system_prompt}
@@ -536,7 +536,7 @@ Conversation rules:
     @groq_circuit_breaker()
     @groq_retry()
     async def _call_llm_and_stream_enhanced(
-        self, system_prompt: str, session: JAIMESSession, streaming_mode: StreamingMode, session_id: str
+        self, system_prompt: str, session: SAIGESession, streaming_mode: StreamingMode, session_id: str
     ) -> AsyncGenerator[str, None]:
         """Enhanced LLM streaming with intelligent pacing"""
         llm_messages = [
@@ -746,7 +746,7 @@ Conversation rules:
             logger.error(f"Error during response streaming for session {session_id}: {e}", exc_info=True)
             yield "I'm experiencing a technical issue. Please try again or call back."
 
-    def _compute_call_duration_ms(self, session: JAIMESSession) -> int:
+    def _compute_call_duration_ms(self, session: SAIGESession) -> int:
         try:
             started = session.temp_data.get("call_started_at")
             if not started:
@@ -757,7 +757,7 @@ Conversation rules:
         except Exception:
             return 0
 
-    def _get_recall_concise_line(self, session: JAIMESSession) -> str:
+    def _get_recall_concise_line(self, session: SAIGESession) -> str:
         """Return a single-line recall note if critical recalls were found for the VIN."""
         try:
             rs = session.temp_data.get('recall_summary')
