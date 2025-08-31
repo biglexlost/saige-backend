@@ -145,10 +145,9 @@ class RedisSessionManager:
         if self.redis_client is None:
             try:
                 self.redis_client = redis.from_url(self.redis_url, decode_responses=True)
-                self.redis_client.ping()
-                logger.info("Successfully connected to Redis server.")
+                logger.info("Redis connection created successfully.")
             except Exception as e:
-                logger.error(f"Failed to connect to Redis: {e}")
+                logger.error(f"Failed to create Redis connection: {e}")
                 raise  # Re-raise exception to halt operations if Redis is unavailable
 
     def _log_retry_attempt(self, retry_state: RetryCallState):

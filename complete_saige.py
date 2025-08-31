@@ -177,11 +177,10 @@ class CompleteSAIGESystem:
         if self.redis_client is None:
             try:
                 self.redis_client = redis.from_url(self.redis_url, decode_responses=True)
-                self.redis_client.ping()
-                logger.info("Successfully connected to Redis server.")
+                logger.info("Redis connection created successfully.")
             except Exception as e:
                 logger.error(
-                    f"Failed to connect to Redis: {e}. Relying on in-memory fallback."
+                    f"Failed to create Redis connection: {e}. Relying on in-memory fallback."
                 )
                 self.redis_client = None
 
