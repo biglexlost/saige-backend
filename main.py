@@ -25,7 +25,7 @@ from dotenv import load_dotenv
 # Consolidate ALL imports from models.py into one place
 from models import (
     ChatMessage,
-    JAIMESSession,
+    SAIGESession,
     CallDetails,  # <--- CallDetails is now imported from models.py
     ConversationState,
     CustomerProfile,
