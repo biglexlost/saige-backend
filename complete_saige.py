@@ -137,15 +137,9 @@ class CompleteSAIGESystem:
         self.customer_engine = MockCustomerEngine()
         self.groq_client = AsyncGroq(api_key=groq_api_key)
         self.groq_model = config.groq_model
-        try:
-            self.redis_client = redis.from_url(redis_url, decode_responses=True)
-            self.redis_client.ping()
-            logger.info("Successfully connected to Redis server.")
-        except Exception as e:
-            logger.error(
-                f"Failed to connect to Redis: {e}. Relying on in-memory fallback."
-            )
-            self.redis_client = None
+        self.redis_url = redis_url
+        self.redis_client = None
+        logger.info("Redis connection will be established on first use.")
         self.in_memory_sessions: Dict[str, JAIMESSession] = {}
 
         # Initialize analytics DB and leads table (HIPAA-safe metadata only)
@@ -178,9 +172,23 @@ class CompleteSAIGESystem:
             self._accent_cache = {}
             self._intelligence_cache = {}
 
+    def _ensure_redis_connection(self):
+        """Ensures Redis connection is established, creating it if needed."""
+        if self.redis_client is None:
+            try:
+                self.redis_client = redis.from_url(self.redis_url, decode_responses=True)
+                self.redis_client.ping()
+                logger.info("Successfully connected to Redis server.")
+            except Exception as e:
+                logger.error(
+                    f"Failed to connect to Redis: {e}. Relying on in-memory fallback."
+                )
+                self.redis_client = None
+
     @redis_circuit_breaker()
     @redis_retry()
     def get_session(self, session_id: str) -> Optional[JAIMESSession]:
+        self._ensure_redis_connection()
         try:
             if self.redis_client and self.redis_client.ping():
                 session_json = self.redis_client.get(session_id)
@@ -195,6 +203,7 @@ class CompleteSAIGESystem:
     @redis_circuit_breaker()
     @redis_retry()
     def save_session(self, session_id: str, session: JAIMESSession):
+        self._ensure_redis_connection()
         try:
             if self.redis_client and self.redis_client.ping():
                 self.redis_client.set(session_id, session.model_dump_json(), ex=3600)

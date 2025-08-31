@@ -113,9 +113,16 @@ class Config(BaseSettings):
         # Allow localhost fallback for development
         if v == "localhost" or v == "127.0.0.1":
             return "redis://localhost:6379"
+        
+        # Allow Upstash Redis URLs (they might have different formats)
+        if "upstash.io" in v or "upstash.com" in v:
+            # If it doesn't have a scheme, add redis://
+            if not v.startswith(("redis://", "rediss://", "https://")):
+                return f"redis://{v}"
+            return v
             
         # If we get here, it's an invalid URL format
-        raise ValueError(f"Invalid Redis URL: Must be redis:// or rediss://. Got: {v}")
+        raise ValueError(f"Invalid Redis URL: Must be redis://, rediss://, or contain upstash.io. Got: {v}")
 
 
 # Create a single, global instance of the configuration that the rest of the app can import

@@ -133,16 +133,23 @@ class RedisSessionManager:
     """Manages the lifecycle of conversation sessions using Redis."""
 
     def __init__(self, redis_url: str):
-        """Initializes the Redis client and checks the connection."""
+        """Initializes the Redis client and stores the URL for lazy connection."""
         if not redis:
             raise ImportError("The 'redis' library is required but not installed.")
-        try:
-            self.redis_client = redis.from_url(redis_url, decode_responses=True)
-            self.redis_client.ping()
-            logger.info("Successfully connected to Redis server.")
-        except Exception as e:
-            logger.error(f"Failed to connect to Redis: {e}")
-            raise  # Re-raise exception to halt startup if Redis is unavailable
+        self.redis_url = redis_url
+        self.redis_client = None
+        logger.info("RedisSessionManager initialized, connection will be established on first use.")
+
+    def _ensure_connection(self):
+        """Ensures Redis connection is established, creating it if needed."""
+        if self.redis_client is None:
+            try:
+                self.redis_client = redis.from_url(self.redis_url, decode_responses=True)
+                self.redis_client.ping()
+                logger.info("Successfully connected to Redis server.")
+            except Exception as e:
+                logger.error(f"Failed to connect to Redis: {e}")
+                raise  # Re-raise exception to halt operations if Redis is unavailable
 
     def _log_retry_attempt(self, retry_state: RetryCallState):
         """Logs a warning to the console before a retry attempt."""
@@ -158,6 +165,7 @@ class RedisSessionManager:
     )
     def get_session(self, session_id: str) -> Optional["JAIMESSession"]:
         """Retrieves a session from Redis by its ID."""
+        self._ensure_connection()
         session_key = f"session:{session_id}"
         session_data = self.redis_client.get(session_key)
         if session_data:
@@ -176,6 +184,7 @@ class RedisSessionManager:
     )
     def save_session(self, session_id: str, session_obj: "JAIMESSession") -> None:
         """Saves a session object to Redis."""
+        self._ensure_connection()
         session_key = f"session:{session_id}"
         # A more robust method would be to use Pydantic's .model_dump_json() if available
         session_data = session_obj.model_dump_json()  # Use Pydantic's optimized method
@@ -190,6 +199,7 @@ class RedisSessionManager:
     )
     def delete_session(self, session_id: str) -> None:
         """Deletes a session from Redis."""
+        self._ensure_connection()
         session_key = f"session:{session_id}"
         self.redis_client.delete(session_key)
         logger.info(f"Session deleted for session_id: {session_id}")
