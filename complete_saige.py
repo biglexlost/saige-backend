@@ -19,7 +19,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_excep
 from config import config
 from groq import AsyncGroq
 import redis
-from analytics import init_analytics_db
+from analytics import init_analytics_db, log_event, ensure_leads_table
 import structlog
 
 # Configure structured logging
