@@ -17,8 +17,8 @@ services:
         value: "1"
       - key: LOG_LEVEL
         value: INFO
-      - key: GROQ_MODEL
-        value: llama-3.1-8b-8192
+              - key: GROQ_MODEL
+          value: llama-3.1-8b
     healthCheckPath: /health
     autoDeploy: true
 
