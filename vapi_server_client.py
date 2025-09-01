@@ -164,7 +164,7 @@ class VAPIServerClient:
             },
             "model": {
                 "provider": "groq",
-                "model": "llama3-8b-8192",
+                "model": "llama3.1-8b-8192",
                 "messages": [
                     {
                         "role": "system",

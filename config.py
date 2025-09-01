@@ -68,7 +68,7 @@ class Config(BaseSettings):
     vapi_api_key: SecretStr = Field(default="", description="VAPI API key for voice integration")
     vapi_assistant_id: Optional[str] = None
     groq_api_key: SecretStr = Field(default="", description="Groq API key for LLM integration")
-    groq_model: str = Field(default="llama3-8b-8192", description="Groq model to use")
+    groq_model: str = Field(default="llama3.1-8b-8192", description="Groq model to use")
     
     # --- Security Settings ---
     max_requests_per_minute: int = 60
